@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(
     cookieSession({
-        name: "bezkoder-session",
+        name: "learn-react-node-session",
         secret: "COOKIE_SECRET", // should use as secret environment variable
         httpOnly: true
     })
@@ -79,7 +79,7 @@ function initial() {
 
 // simple route
 app.get("/", (req, res) => {
-    res.json({ message: "Welcome to bezkoder application." });
+    res.json({ message: "Welcome To Learn React Node Application." });
 });
 
 // routes
