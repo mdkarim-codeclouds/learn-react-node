@@ -1,41 +1,94 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const express = require("express");
+const cors = require("cors");
+const cookieSession = require("cookie-session");
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+const app = express();
 
-var app = express();
+var corsOptions = {
+    origin: "http://localhost:3000"
+};
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+app.use(cors(corsOptions));
 
-app.use(logger('dev'));
+// parse requests of content-type - application/json
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+// parse requests of content-type - application/x-www-form-urlencoded
+app.use(express.urlencoded({ extended: true }));
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
+app.use(
+    cookieSession({
+        name: "bezkoder-session",
+        secret: "COOKIE_SECRET", // should use as secret environment variable
+        httpOnly: true
+    })
+);
+
+const db = require("./app/models");
+const Role = db.role;
+const dbConfig = require("./app/config/db.config");
+db.mongoose
+    .connect(`${dbConfig.PREHOST}://${dbConfig.USERNAME}:${dbConfig.PASSWORD}@${dbConfig.HOST}/${dbConfig.DB}`, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+    })
+    .then(() => {
+        console.log("Successfully connect to MongoDB.");
+        //initial();
+    })
+    .catch(err => {
+        console.error("Connection error", err);
+        process.exit();
+    });
+function initial() {
+    Role.estimatedDocumentCount((err, count) => {
+        console.log("count: " + count);
+        if (!err && count === 0) {
+            new Role({
+                name: "user"
+            }).save(err => {
+                if (err) {
+                    console.log("error", err); 
+                }
+
+                console.log("added 'user' to roles collection");
+            });
+
+            new Role({
+                name: "moderator"
+            }).save(err => {
+                if (err) {
+                    console.log("error", err);
+                }
+
+                console.log("added 'moderator' to roles collection");
+            });
+
+            new Role({
+                name: "admin"
+            }).save(err => {
+                if (err) {
+                    console.log("error", err);
+                }
+
+                console.log("added 'admin' to roles collection");
+            });
+        }
+    });
+}
+
+// simple route
+app.get("/", (req, res) => {
+    res.json({ message: "Welcome to bezkoder application." });
 });
 
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+// routes
+require('./app/routes/auth.routes')(app);
+require('./app/routes/user.routes')(app);
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+
+// set port, listen for requests
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}.`);
 });
-
-module.exports = app;
