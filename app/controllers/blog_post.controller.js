@@ -58,6 +58,7 @@ exports.delete = (req, res) => {
     BlogPost.updateOne({
         _id: req.body.id,
     }, {
+        updated_on: moment().format(), 
         isDeleted: true,
     })
     .exec((err, blog_post) => {
