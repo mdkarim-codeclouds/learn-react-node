@@ -84,7 +84,6 @@ export default function Login() {
                             name="email"
                             type="email"
                             autoComplete="email"
-                            autoFocus
                             error={formValues.email.error}
                             helperText={formValues.email.error && formValues.email.errorMessage}
                         />
@@ -96,7 +95,6 @@ export default function Login() {
                             label="Password"
                             type="password"
                             id="password"
-                            autoComplete="current-password"
                             error={formValues.password.error}
                             helperText={formValues.password.error && formValues.password.errorMessage}
                         />

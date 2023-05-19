@@ -107,7 +107,6 @@ export default function Contact() {
                             fullWidth
                             id="name"
                             label="Name"
-                            autoFocus
                             error={formValues.name.error}
                             helperText={formValues.name.error && formValues.name.errorMessage}
                         />
@@ -120,7 +119,6 @@ export default function Contact() {
                             name="email"
                             type="email"
                             autoComplete="email"
-                            autoFocus
                             error={formValues.email.error}
                             helperText={formValues.email.error && formValues.email.errorMessage}
                         />

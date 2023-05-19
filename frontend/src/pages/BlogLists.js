@@ -197,7 +197,7 @@ const BlogListsToolbar = (props) => {
                     id="tableTitle"
                     component="div"
                 >
-                    Nutrition
+                    Blog Post List
                 </Typography>
             )}
 

@@ -103,13 +103,11 @@ export default function Register() {
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
                                 <TextField
-                                    autoComplete="given-name"
                                     name="name"
                                     required
                                     fullWidth
                                     id="name"
                                     label="Name"
-                                    autoFocus
                                     error={formValues.name.error}
                                     helperText={formValues.name.error && formValues.name.errorMessage}
                                 />
@@ -147,12 +145,6 @@ export default function Register() {
                                     id="confirm-password"
                                     error={formValues.confirmPassword.error}
                                     helperText={formValues.confirmPassword.error && formValues.confirmPassword.errorMessage}
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <FormControlLabel
-                                    control={<Checkbox value="allowExtraEmails" color="primary" />}
-                                    label="I want to receive inspiration, marketing promotions and updates via email."
                                 />
                             </Grid>
                         </Grid>
