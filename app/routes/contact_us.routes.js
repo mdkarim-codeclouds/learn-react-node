@@ -1,3 +1,4 @@
+const { authJwt } = require("../middlewares");
 const controller = require("../controllers/contact_us.controller");
 
 module.exports = function (app) {
@@ -9,8 +10,14 @@ module.exports = function (app) {
         next();
     });
 
+    app.get(
+        "/api/contact_us",
+        [authJwt.verifyToken, authJwt.isAdmin], 
+        controller.fetch
+    );
+
     app.post(
-        "/api/contact_us", 
+        "/api/contact_us",
         controller.insert
     );
 };

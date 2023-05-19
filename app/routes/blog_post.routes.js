@@ -12,19 +12,18 @@ module.exports = function (app) {
 
     app.get(
         "/api/blog_posts", 
-        [authJwt.verifyToken, authJwt.isModerator], 
         controller.fetch
     );
 
     app.post(
         "/api/blog_posts", 
-        [authJwt.verifyToken, authJwt.isModerator], 
+        [authJwt.verifyToken, authJwt.isAdmin], 
         controller.insert
     );
 
     app.put(
         "/api/blog_posts",
-        [authJwt.verifyToken, authJwt.isModerator],
+        [authJwt.verifyToken, authJwt.isAdmin],
         controller.update
     );
 

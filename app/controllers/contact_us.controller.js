@@ -21,3 +21,21 @@ exports.insert = (req, res) => {
         return;
     });
 };
+
+exports.fetch = (req, res) => {
+    ContactUs.find({
+        isDeleted: false,
+    })
+    .exec((err, contact_us) => {
+        if (err) {
+            res.status(500).send({ message: err });
+            return;
+        }
+
+        if (!contact_us) {
+            return res.status(404).send({ message: "Contact us not found." });
+        }
+
+        res.status(200).send({ data: contact_us, message: "Contact us fetched successfully" });
+    });
+};
