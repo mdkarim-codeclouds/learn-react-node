@@ -27,9 +27,7 @@ exports.insert = (req, res) => {
 };
 
 exports.update = (req, res) => {
-    BlogPost.updateOne({
-        _id: req.body.id,
-    }, {
+    BlogPost.findByIdAndUpdate(req.body._id, {
         title: req.body.title,
         details: req.body.details,
         image: req.body.image,
@@ -55,9 +53,7 @@ exports.update = (req, res) => {
 };
 
 exports.delete = (req, res) => {
-    BlogPost.updateOne({
-        _id: req.body.id,
-    }, {
+    BlogPost.findByIdAndUpdate(req.body._id, {
         updated_on: moment().format(), 
         isDeleted: true,
     })
