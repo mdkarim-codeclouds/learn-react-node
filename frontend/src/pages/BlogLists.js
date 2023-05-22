@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useEffect } from "react";
 import PropTypes from 'prop-types';
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -16,8 +17,6 @@ import Paper from '@mui/material/Paper';
 import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
@@ -80,34 +79,34 @@ function stableSort(array, comparator) {
 
 const headCells = [
     {
-        id: 'name',
+        id: 'title',
         numeric: false,
         disablePadding: true,
-        label: 'Dessert (100g serving)',
+        label: 'Title',
     },
     {
-        id: 'calories',
-        numeric: true,
+        id: 'details',
+        numeric: false,
         disablePadding: false,
-        label: 'Calories',
+        label: 'Details',
     },
     {
-        id: 'fat',
-        numeric: true,
+        id: 'status',
+        numeric: false,
         disablePadding: false,
-        label: 'Fat (g)',
+        label: 'Status',
     },
     {
-        id: 'carbs',
-        numeric: true,
+        id: 'publish_on',
+        numeric: false,
         disablePadding: false,
-        label: 'Carbs (g)',
+        label: 'Publish On',
     },
     {
-        id: 'protein',
-        numeric: true,
+        id: 'action',
+        numeric: false,
         disablePadding: false,
-        label: 'Protein (g)',
+        label: 'Action',
     },
 ];
 
@@ -223,11 +222,13 @@ BlogListsToolbar.propTypes = {
 };
 
 export default function BlogLists() {
+    useEffect(() => {
+        document.title = "React Node | Blog List";
+    }, []);
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState('calories');
     const [selected, setSelected] = React.useState([]);
     const [page, setPage] = React.useState(0);
-    const [dense, setDense] = React.useState(false);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
     const handleRequestSort = (event, property) => {
@@ -274,10 +275,6 @@ export default function BlogLists() {
         setPage(0);
     };
 
-    const handleChangeDense = (event) => {
-        setDense(event.target.checked);
-    };
-
     const isSelected = (name) => selected.indexOf(name) !== -1;
 
     // Avoid a layout jump when reaching the last page with empty rows.
@@ -292,7 +289,7 @@ export default function BlogLists() {
                     <Table
                         sx={{ minWidth: 750 }}
                         aria-labelledby="tableTitle"
-                        size={dense ? 'small' : 'medium'}
+                        size={'medium'}
                     >
                         <BlogListsHead
                             numSelected={selected.length}
@@ -338,17 +335,17 @@ export default function BlogLists() {
                                             >
                                                 {row.name}
                                             </TableCell>
-                                            <TableCell align="right">{row.calories}</TableCell>
-                                            <TableCell align="right">{row.fat}</TableCell>
-                                            <TableCell align="right">{row.carbs}</TableCell>
-                                            <TableCell align="right">{row.protein}</TableCell>
+                                            <TableCell align="left">{row.calories}</TableCell>
+                                            <TableCell align="left">{row.fat}</TableCell>
+                                            <TableCell align="left">{row.carbs}</TableCell>
+                                            <TableCell align="left">{row.protein}</TableCell>
                                         </TableRow>
                                     );
                                 })}
                             {emptyRows > 0 && (
                                 <TableRow
                                     style={{
-                                        height: (dense ? 33 : 53) * emptyRows,
+                                        height: (53) * emptyRows,
                                     }}
                                 >
                                     <TableCell colSpan={6} />
@@ -358,7 +355,7 @@ export default function BlogLists() {
                     </Table>
                 </TableContainer>
                 <TablePagination
-                    rowsPerPageOptions={[5, 10, 25]}
+                    rowsPerPageOptions={[10]}
                     component="div"
                     count={rows.length}
                     rowsPerPage={rowsPerPage}
@@ -367,10 +364,6 @@ export default function BlogLists() {
                     onRowsPerPageChange={handleChangeRowsPerPage}
                 />
             </Paper>
-            <FormControlLabel
-                control={<Switch checked={dense} onChange={handleChangeDense} />}
-                label="Dense padding"
-            />
         </Box>
     );
 }

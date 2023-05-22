@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -19,6 +19,9 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 const defaultTheme = createTheme();
 
 export default function Register() {
+    useEffect(() => {
+        document.title = "React Node | Register";
+    }, []);
     const [formValues, setFormValues] = useState({
         name: {
             value: '',
