@@ -16,10 +16,13 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Config from '../config/index';
 
 const drawerWidth = 240;
-const navItems = ['Home', 'About', 'Contact', 'Blog list', 'Login', 'Register', 'Logout'];
-const navItemsLinks = { 'Home': '/', 'About': '/about', 'Contact': '/contact', 'Blog list': '/bloglists', 'Logout': '/logout', 'Login': '/login', 'Register': '/register' };
+const navItems = Config.MENU_ITEM;
+const navItemsLinks = Config.MENU_ITEM_LINK;
 
 const Layout = (props) => {
     const { window } = props;
@@ -101,6 +104,18 @@ const Layout = (props) => {
                 </Box>
                 <Box component="main" sx={{ p: 4 }}></Box>
             </Box>
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
             <Container fixed>
                 <Outlet />
             </Container>
