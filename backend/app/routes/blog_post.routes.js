@@ -15,6 +15,11 @@ module.exports = function (app) {
         controller.fetch
     );
 
+    app.get(
+        "/api/post",
+        controller.fetchPost
+    );
+
     app.post(
         "/api/blog_posts", 
         [authJwt.verifyToken, authJwt.isAdmin], 

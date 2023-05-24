@@ -88,3 +88,22 @@ exports.fetch = (req, res) => {
         res.status(200).send({ data: blog_posts, message: "Blog post fetched successfully" });
     });
 };
+
+exports.fetchPost = (req, res) => {
+    BlogPost.findOne({
+        _id: req.query._id,
+        isDeleted: false,
+    })
+    .exec((err, blog_post) => {
+        if (err) {
+            res.status(500).send({ message: err });
+            return;
+        }
+
+        if (!blog_post) {
+            return res.status(404).send({ message: "Blog post not found." });
+        }
+
+        res.status(200).send({ data: blog_post, message: "Blog post fetched successfully" });
+    });
+};

@@ -1,5 +1,10 @@
 import axios from "./axios";
 
+async function fetchPost(value) {
+    var response = await axios.get('post', { params: value });
+    return response;
+}
+
 async function all(value) {
     var response = await axios.get('blog_posts', { params: value });
     return response;
@@ -21,6 +26,7 @@ async function remove(params) {
 }
 
 export {
+    fetchPost,
     all,
     create,
     update,

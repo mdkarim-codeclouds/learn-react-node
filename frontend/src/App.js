@@ -4,11 +4,14 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./pages/Layout";
 import Home from "./pages/Home";
 import BlogLists from "./pages/BlogLists";
+import BlogListEdit from "./pages/BlogListEdit";
+import BlogListNew from "./pages/BlogListNew";
 import Contact from "./pages/Contact";
 import NoPage from "./pages/NoPage";
 import About from "./pages/About";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Blog from "./pages/Blog";
 
 function App() {
   /* return (
@@ -36,6 +39,9 @@ function App() {
           <Route index element={<Home />} />
           <Route path="home" element={<Home />} />
           <Route path="bloglists" element={<BlogLists />} />
+          <Route path="bloglist/edit/:id" element={<BlogListEdit />} />
+          <Route path="bloglist/new" element={<BlogListNew />} />
+          <Route path="blog/:id" element={<Blog />} />
           <Route path="about" element={<About />} />
           <Route path="contact" element={<Contact />} />
           <Route path="login" element={<Login />} />
