@@ -16,17 +16,26 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Config from '../config/index';
+import { isUserLogin, getUserAuthToken, unsetUserData } from '../storage/index';
+import { notifySuccess, notifyError } from '../notify/index';
+import { logout } from '../api/auth';
 
 const drawerWidth = 240;
-const navItems = Config.MENU_ITEM;
+const navItems = isUserLogin() ? Config.LOGGED_USER_MENU_ITEM : Config.MENU_ITEM;
 const navItemsLinks = Config.MENU_ITEM_LINK;
+const MySwal = withReactContent(Swal);
 
 const Layout = (props) => {
-    const { window } = props;
+    const { layoutWindow } = props;
     const [mobileOpen, setMobileOpen] = React.useState(false);
+    const [loading, setLoading] = React.useState(false);
 
     const handleDrawerToggle = () => {
         setMobileOpen((prevState) => !prevState);
@@ -35,6 +44,39 @@ const Layout = (props) => {
     const handleClick = (goTo) => {
         navigate(goTo);
     }
+
+    const handleLogout = () => {
+        MySwal.fire({
+            title: 'Are you sure?',
+            text: "You want to logout!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                setLoading(true);
+                let token = getUserAuthToken();
+                logout({ token: token }).then((res) => {
+                    notifySuccess(res.data.message);
+                    unsetUserData();
+                    if (window.location.pathname == '/') {
+                        window.location.reload();
+                    } else {
+                        window.location = "/";
+                    }
+                }).catch((err) => {
+                    if (err.data) {
+                        notifyError(err.data.message);
+                    }
+                }).finally(() => {
+                    setLoading(false);
+                });
+            }
+        });
+    };
 
     const drawer = (
         <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
@@ -53,7 +95,7 @@ const Layout = (props) => {
             </List>
         </Box>
     );
-    const container = window !== undefined ? () => window().document.body : undefined;
+    const container = layoutWindow !== undefined ? () => layoutWindow().document.body : undefined;
     return (
         <>
             <Box sx={{ display: 'flex' }}>
@@ -78,9 +120,11 @@ const Layout = (props) => {
                         </Typography>
                         <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
                             {navItems.map((item) => (
-                                <Button key={item} sx={{ color: '#fff', marginRight: '15px' }}>
-                                    <Link to={navItemsLinks[item]} style={{ color: '#fff', textDecoration: 'none' }}>{item}</Link>
-                                </Button>
+                                item == 'Logout' ? 
+                                    <Button key={item} sx={{ color: '#fff', marginRight: '15px' }} onClick={handleLogout}>{item}</Button> :
+                                    <Button key={item} sx={{ color: '#fff', marginRight: '15px' }}>
+                                        <Link to={navItemsLinks[item]} style={{ color: '#fff', textDecoration: 'none' }}>{item}</Link>
+                                    </Button>
                             ))}
                         </Box>
                     </Toolbar>
@@ -119,6 +163,12 @@ const Layout = (props) => {
             <Container fixed>
                 <Outlet />
             </Container>
+            <Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={loading}
+            >
+                <CircularProgress color="inherit" />
+            </Backdrop>
         </>
     )
 };
@@ -128,7 +178,7 @@ Layout.propTypes = {
      * Injected by the documentation to work in an iframe.
      * You won't need it on your project.
      */
-    window: PropTypes.func,
+    layoutWindow: PropTypes.func,
 };
 
 export default Layout;

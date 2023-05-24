@@ -1,27 +1,36 @@
 import * as React from 'react';
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { isUserLogin } from '../storage/index';
+import { notifySuccess, notifyError } from '../notify/index';
+import { register } from '../api/auth';
+import { validateEmail, convertToSlug } from '../util/index';
 
 // TODO remove, this demo shouldn't need to reset the theme.
 
 const defaultTheme = createTheme();
 
 export default function Register() {
+    const navigate = useNavigate();
     useEffect(() => {
+        if (isUserLogin()) {
+            navigate('/');
+        }
         document.title = "React Node | Register";
     }, []);
+    const [loading, setLoading] = useState(false);
     const [formValues, setFormValues] = useState({
         name: {
             value: '',
@@ -59,7 +68,7 @@ export default function Register() {
         } else {
             newFormValues.name.error = false;
         }
-        if (!(/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email))) {
+        if (!validateEmail(email)) {
             newFormValues.email.error = true;
             formError = true;
         } else {
@@ -79,7 +88,22 @@ export default function Register() {
         }
         setFormValues(newFormValues);
         if (!formError) {
-            console.log(email, password);
+            setLoading(true);
+            register({
+                name: name,
+                username: convertToSlug(name),
+                email: email,
+                password: password
+            }).then((res) => {
+                notifySuccess(res.data.message);
+                navigate('/login');
+            }).catch((err) => {
+                if (err.data) {
+                    notifyError(err.data.message);
+                }
+            }).finally(() => {
+                setLoading(false);
+            });
         }
         return;
     };
@@ -169,6 +193,12 @@ export default function Register() {
                     </Box>
                 </Box>
                 {/* <Copyright sx={{ mt: 5 }} /> */}
+                <Backdrop
+                    sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                    open={loading}
+                >
+                    <CircularProgress color="inherit" />
+                </Backdrop>
             </Container>
         </ThemeProvider>
     );

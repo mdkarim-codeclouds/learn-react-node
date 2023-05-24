@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -10,18 +10,27 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { login } from '../api/auth';
 import { notifySuccess, notifyError } from '../notify/index';
+import { login } from '../api/auth';
+import { validateEmail } from '../util/index';
+import { setUserData, isUserLogin } from '../storage/index';
 
 // TODO remove, this demo shouldn't need to reset the theme.
 
 const defaultTheme = createTheme();
 
 export default function Login() {
+    const navigate = useNavigate();
     useEffect(() => {
+        if (isUserLogin()) {
+            navigate('/');
+        }
         document.title = "React Node | Login";
-    }, []);
+    });
+    const [loading, setLoading] = useState(false);
     const [formValues, setFormValues] = useState({
         email: {
             value: '',
@@ -41,7 +50,7 @@ export default function Login() {
         const data = new FormData(event.currentTarget);
         const email = (data.get('email')).trim();
         const password = (data.get('password')).trim();
-        if (!(/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email))){
+        if (!validateEmail(email)){
             newFormValues.email.error = true;
             formError = true;
         } else {
@@ -55,14 +64,18 @@ export default function Login() {
         }
         setFormValues(newFormValues);
         if (!formError){
+            setLoading(true);
             login({ email: email, password: password }).then((res) => {
                 notifySuccess('Login succeed');
-                console.log(res.data);
+                setUserData(res.data);
+                window.location = "/";
             }).catch((err) => {
-                notifyError(err.data.message);
-                //console.log(err.data.message);
+                if (err.data) {
+                    notifyError(err.data.message);
+                }
+            }).finally(() => {
+                setLoading(false);
             });
-            console.log(email, password);
         }
     };
 
@@ -125,6 +138,12 @@ export default function Login() {
                         </Grid>
                     </Box>
                 </Box>
+                <Backdrop
+                    sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                    open={loading}
+                >
+                    <CircularProgress color="inherit" />
+                </Backdrop>
             </Container>
         </ThemeProvider>
     );
