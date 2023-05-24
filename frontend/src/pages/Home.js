@@ -10,6 +10,9 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
+import { styled } from '@mui/material/styles';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -21,6 +24,14 @@ const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
+
+const Item = styled(Paper)(({ theme }) => ({
+    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+    ...theme.typography.body2,
+    padding: theme.spacing(3),
+    textAlign: 'center',
+    color: theme.palette.text.secondary,
+}));
 
 export default function Home() {
     const [loading, setLoading] = useState(false);
@@ -77,32 +88,39 @@ export default function Home() {
                                 </Card>
                             </Grid>
                         ))} */}
-                        {blogs.map((card) => (
-                            <Grid item key={card._id} xs={12} sm={6} md={4}>
-                                <Card
-                                    sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}
-                                >
-                                    <CardMedia
-                                        component="div"
-                                        sx={{
-                                            // 16:9
-                                            pt: '56.25%',
-                                        }}
-                                        image={card.image}
-                                    />
-                                    <CardContent sx={{ flexGrow: 1 }}>
-                                        <Typography gutterBottom variant="h5" component="h2">{card.title}</Typography>
-                                        <Typography>{card.details}</Typography>
-                                    </CardContent>
-                                    <CardActions>
-                                        <Button size="small">
-                                            <Link to={'/blog/' + card._id} style={{ textDecoration: 'none' }}>View</Link>
-                                        </Button>
-                                        {isUserLogin() ? <Button size="small"><Link to={'/bloglist/edit/' + card._id} style={{ textDecoration: 'none' }}>Edit</Link></Button> : ''}
-                                    </CardActions>
-                                </Card>
+                        { blogs.length >= 1 ?
+                            blogs.map((card) => (
+                                <Grid item key={card._id} xs={12} sm={6} md={4}>
+                                    <Card
+                                        sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+                                    >
+                                        <CardMedia
+                                            component="div"
+                                            sx={{
+                                                // 16:9
+                                                pt: '56.25%',
+                                            }}
+                                            image={card.image}
+                                        />
+                                        <CardContent sx={{ flexGrow: 1 }}>
+                                            <Typography gutterBottom variant="h5" component="h2">{card.title}</Typography>
+                                            <Typography>{card.details}</Typography>
+                                        </CardContent>
+                                        <CardActions>
+                                            <Button size="small">
+                                                <Link to={'/blog/' + card._id} style={{ textDecoration: 'none' }}>View</Link>
+                                            </Button>
+                                            {isUserLogin() ? <Button size="small"><Link to={'/bloglist/edit/' + card._id} style={{ textDecoration: 'none' }}>Edit</Link></Button> : ''}
+                                        </CardActions>
+                                    </Card>
+                                </Grid>
+                            )) : 
+                            <Grid xs={12} sm={12} md={12}>
+                                <Stack spacing={2}>
+                                    <Item>No Post Found</Item>
+                                </Stack>
                             </Grid>
-                        ))}
+                        }
                     </Grid>
                 </Container>
                 <Backdrop
