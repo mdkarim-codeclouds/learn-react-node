@@ -21,7 +21,7 @@ async function update(params) {
 }
 
 async function remove(params) {
-    var response = await axios.delete('blog_posts', params);
+    var response = await axios.delete('blog_posts', { data: params });
     return response;
 }
 

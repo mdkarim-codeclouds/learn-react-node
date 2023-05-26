@@ -71,10 +71,18 @@ exports.delete = (req, res) => {
     });
 };
 
-exports.fetch = (req, res) => {
+exports.fetch = async (req, res) => {
+    let page = req.query.page || 0;
+    let limit = req.query.limit || 10;
+    if (limit <= 0){
+        limit = 1000;
+    }
+    let countTotal = await BlogPost.count({ isDeleted: false });
     BlogPost.find({
         isDeleted: false,
     })
+    .limit(limit)
+    .skip(limit * page)
     .exec((err, blog_posts) => {
         if (err) {
             res.status(500).send({ message: err });
@@ -85,7 +93,7 @@ exports.fetch = (req, res) => {
             return res.status(404).send({ message: "Blog post not found." });
         }
 
-        res.status(200).send({ data: blog_posts, message: "Blog post fetched successfully" });
+        res.status(200).send({ data: blog_posts, message: "Blog post fetched successfully", total: countTotal });
     });
 };
 

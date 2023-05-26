@@ -19,11 +19,14 @@ import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
+import TextField from '@mui/material/TextField';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { notifyError, notifySuccess } from '../notify/index';
 import { isUserLogin, unsetUserData } from '../storage/index';
 import { all, remove } from '../api/blogpost';
+import * as moment from 'moment';
+import debounce from "lodash/debounce";
 
 const MySwal = withReactContent(Swal);
 function TablePaginationActions(props) {
@@ -91,9 +94,20 @@ export default function BlogLists() {
     const navigate = useNavigate();
     const [loading, setLoading] = React.useState(false);
     const [blogs, setBlogs] = React.useState([]);
-    const getBlogPosts = () => {
+    const [page, setPage] = React.useState(0);
+    const [search, setSearch] = React.useState('');
+    const [rowsPerPage, setRowsPerPage] = React.useState(10); 
+    const delayedSearch = React.useCallback(
+        debounce((q, r, p) => getBlogPosts(q, r, p), 300),
+        []
+    );
+    const getBlogPosts = (search = '', limit = 10, page = 0) => {
         setLoading(true);
-        all({ search: '' }).then((res) => {
+        all({ 
+            search: search,
+            limit: limit,
+            page: page,
+        }).then((res) => {
             setBlogs(res.data.data);
         }).catch((err) => {
             if (err.data) {
@@ -112,16 +126,22 @@ export default function BlogLists() {
         }
     }, []);
 
-    const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(10);
-
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
+        getBlogPosts(search, rowsPerPage, newPage);
     };
 
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
+        getBlogPosts(search, event.target.value, 0);
+    };
+
+    const handleChangeSearch = (event) => {
+        // Input will be changed immidiately
+        setSearch(event.target.value);
+        // Search will only be called when user stops typing 
+        delayedSearch(event.target.value, rowsPerPage, page);
     };
 
     const handleBlogPostDelete = (_id) => {
@@ -160,10 +180,13 @@ export default function BlogLists() {
             <Table sx={{ minWidth: 700 }} aria-label="Blog Lists">
                 <TableHead>
                     <TableRow>
-                        <TableCell>
+                        <TableCell colSpan={3}>
                             <Typography variant="h4" gutterBottom>
                                 Blog Lists
                             </Typography>
+                        </TableCell>
+                        <TableCell colSpan={3} align='right'>
+                            <TextField id="standard-basic" label="Search" variant="standard" onChange={handleChangeSearch}/>
                         </TableCell>
                     </TableRow>
                     <TableRow>
@@ -208,7 +231,7 @@ export default function BlogLists() {
                                     src={row.image}
                                 />
                             </StyledTableCell>
-                            <StyledTableCell>{row.publish_on}</StyledTableCell>
+                            <StyledTableCell>{moment(row.publish_on).format('LLL')}</StyledTableCell>
                             <StyledTableCell>
                                 <Button variant="contained">
                                     <Link to={'/bloglist/edit/' + row._id} style={{ textDecoration: 'none', color: '#fff' }}>Edit</Link>
