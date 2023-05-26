@@ -117,4 +117,11 @@ exports.signout = async (req, res) => {
     } catch (err) {
         this.next(err);
     }
+}; 
+exports.userTokenCheck = async (req, res) => {
+    try {
+        return res.status(200).send({ message: "You've been signed in!" });
+    } catch (err) {
+        this.next(err);
+    }
 };

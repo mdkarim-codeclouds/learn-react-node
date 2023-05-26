@@ -15,8 +15,14 @@ async function logout(params) {
     return response;
 }
 
+async function checkUserToken(params) {
+    var response = await axios.post('auth/check', params);
+    return response;
+}
+
 export {
     login,
     register,
-    logout
+    logout,
+    checkUserToken
 }

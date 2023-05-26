@@ -125,7 +125,6 @@ export default function BlogLists() {
     };
 
     const handleBlogPostDelete = (_id) => {
-        console.log(_id);
         MySwal.fire({
             title: 'Are you sure?',
             text: "You want to delete!",

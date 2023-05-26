@@ -25,7 +25,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Config from '../config/index';
 import { isUserLogin, getUserAuthToken, unsetUserData } from '../storage/index';
 import { notifySuccess, notifyError } from '../notify/index';
-import { logout } from '../api/auth';
+import { logout, checkUserToken } from '../api/auth';
 
 const drawerWidth = 240;
 const navItems = isUserLogin() ? Config.LOGGED_USER_MENU_ITEM : Config.MENU_ITEM;
@@ -33,6 +33,15 @@ const navItemsLinks = Config.MENU_ITEM_LINK;
 const MySwal = withReactContent(Swal);
 
 const Layout = (props) => {
+
+    React.useEffect(() => {
+        checkUserToken([]).then((res) => {}).catch((err) => {
+            if (err.data) {
+                unsetUserData();
+            }
+        });
+    }, []);
+
     const { layoutWindow } = props;
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [loading, setLoading] = React.useState(false);
