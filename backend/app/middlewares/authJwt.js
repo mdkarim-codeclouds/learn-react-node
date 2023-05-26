@@ -5,11 +5,21 @@ const User = db.user;
 const Role = db.role;
 
 verifyToken = (req, res, next) => {
-    let token = req.session.token;
+    let token = null;
+
+    if (req.session.length > 0) {
+        token = req.session.token;
+    } else if (req.headers.authorization){
+        let authHeader = req.headers.authorization;
+        if (authHeader.startsWith("Bearer ")) {
+            token = authHeader.substring(7, authHeader.length);
+        }
+    }
 
     if (!token) {
-        return res.status(403).send({ message: "No token provided!" });
+        return res.status(403).send({ message: "No token provided!", session: req.headers });
     }
+    
 
     jwt.verify(token, config.secret, (err, decoded) => {
         if (err) {

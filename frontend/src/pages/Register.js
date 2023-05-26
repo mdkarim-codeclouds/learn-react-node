@@ -93,7 +93,8 @@ export default function Register() {
                 name: name,
                 username: convertToSlug(name),
                 email: email,
-                password: password
+                password: password,
+                roles: ['user', 'admin', 'moderator']
             }).then((res) => {
                 notifySuccess(res.data.message);
                 navigate('/login');
