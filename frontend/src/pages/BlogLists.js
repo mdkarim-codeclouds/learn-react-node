@@ -20,6 +20,7 @@ import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import TextField from '@mui/material/TextField';
+import AddBoxIcon from '@mui/icons-material/AddBox';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { notifyError, notifySuccess } from '../notify/index';
@@ -183,6 +184,9 @@ export default function BlogLists() {
                         <TableCell colSpan={3}>
                             <Typography variant="h4" gutterBottom>
                                 Blog Lists
+                                <IconButton sx={{ marginLeft: 5 }} aria-label="Add" size="large" onClick={() => navigate('/bloglist/new')}>
+                                    <AddBoxIcon fontSize="inherit" />
+                                </IconButton>
                             </Typography>
                         </TableCell>
                         <TableCell colSpan={3} align='right'>

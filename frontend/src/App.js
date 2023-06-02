@@ -4,8 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./pages/Layout";
 import Home from "./pages/Home";
 import BlogLists from "./pages/BlogLists";
-import BlogListEdit from "./pages/BlogListEdit";
-import BlogListNew from "./pages/BlogListNew";
+import BlogListForm from "./pages/BlogListForm";
 import Contact from "./pages/Contact";
 import NoPage from "./pages/NoPage";
 import About from "./pages/About";
@@ -39,8 +38,8 @@ function App() {
           <Route index element={<Home />} />
           <Route path="home" element={<Home />} />
           <Route path="bloglists" element={<BlogLists />} />
-          <Route path="bloglist/edit/:id" element={<BlogListEdit />} />
-          <Route path="bloglist/new" element={<BlogListNew />} />
+          <Route path="bloglist/edit/:id" element={<BlogListForm type="edit" />} />
+          <Route path="bloglist/new" element={<BlogListForm type="new" />} />
           <Route path="blog/:id" element={<Blog />} />
           <Route path="about" element={<About />} />
           <Route path="contact" element={<Contact />} />

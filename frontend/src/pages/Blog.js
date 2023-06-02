@@ -24,7 +24,6 @@ export default function Blog() {
         document.title = "React Node | Blog";
         setLoading(true);
         fetchPost({ _id: id }).then((res) => {
-            console.log(res.data.data);
             setPost(res.data.data);
             document.title = "React Node | Blog - " + res.data.data.title;
         }).catch((err) => {
