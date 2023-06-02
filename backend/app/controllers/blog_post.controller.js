@@ -74,6 +74,7 @@ exports.delete = (req, res) => {
 exports.fetch = async (req, res) => {
     let page = req.query.page || 0;
     let limit = req.query.limit || 10;
+    let sort = req.query.sort == 'asc' ? 1 : -1;
     if (limit <= 0){
         limit = 1000;
     }
@@ -83,6 +84,7 @@ exports.fetch = async (req, res) => {
     })
     .limit(limit)
     .skip(limit * page)
+    .sort({ created_on: sort })
     .exec((err, blog_posts) => {
         if (err) {
             res.status(500).send({ message: err });

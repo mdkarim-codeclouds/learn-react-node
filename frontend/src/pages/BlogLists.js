@@ -18,6 +18,10 @@ import IconButton from '@mui/material/IconButton';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import Backdrop from '@mui/material/Backdrop';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 import CircularProgress from '@mui/material/CircularProgress';
 import TextField from '@mui/material/TextField';
 import AddBoxIcon from '@mui/icons-material/AddBox';
@@ -95,21 +99,25 @@ export default function BlogLists() {
     const navigate = useNavigate();
     const [loading, setLoading] = React.useState(false);
     const [blogs, setBlogs] = React.useState([]);
+    const [totalCount, settotalCount] = React.useState(0);
     const [page, setPage] = React.useState(0);
     const [search, setSearch] = React.useState('');
-    const [rowsPerPage, setRowsPerPage] = React.useState(10); 
+    const [sort, setSort] = React.useState('asc');
+    const [rowsPerPage, setRowsPerPage] = React.useState(5); 
     const delayedSearch = React.useCallback(
         debounce((q, r, p) => getBlogPosts(q, r, p), 300),
         []
     );
-    const getBlogPosts = (search = '', limit = 10, page = 0) => {
+    const getBlogPosts = (search = '', limit = 5, page = 0, sort = 'asc') => {
         setLoading(true);
         all({ 
             search: search,
             limit: limit,
             page: page,
+            sort: sort,
         }).then((res) => {
             setBlogs(res.data.data);
+            settotalCount(res.data.total);
         }).catch((err) => {
             if (err.data) {
                 notifyError(err.data.message);
@@ -133,7 +141,7 @@ export default function BlogLists() {
     };
 
     const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
+        setRowsPerPage(parseInt(event.target.value, 5));
         setPage(0);
         getBlogPosts(search, event.target.value, 0);
     };
@@ -143,6 +151,11 @@ export default function BlogLists() {
         setSearch(event.target.value);
         // Search will only be called when user stops typing 
         delayedSearch(event.target.value, rowsPerPage, page);
+    };
+
+    const handleSort = (event) => {
+        setSort(event.target.value);
+        getBlogPosts(search, rowsPerPage, page, event.target.value);
     };
 
     const handleBlogPostDelete = (_id) => {
@@ -189,8 +202,25 @@ export default function BlogLists() {
                                 </IconButton>
                             </Typography>
                         </TableCell>
-                        <TableCell colSpan={3} align='right'>
-                            <TextField id="standard-basic" label="Search" variant="standard" onChange={handleChangeSearch}/>
+                        <TableCell colSpan={1}>
+                            <FormControl variant="standard" fullWidth>
+                                <InputLabel id="sort-select-label">Sort by date</InputLabel>
+                                <Select
+                                    label="Sort by date"
+                                    labelId="sort-select-label"
+                                    id="sort-select"
+                                    value={sort}
+                                    onChange={handleSort}
+                                >
+                                    <MenuItem value='asc'>Asc</MenuItem>
+                                    <MenuItem value='desc'>Desc</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </TableCell>
+                        <TableCell colSpan={1} align='right'>
+                            <FormControl fullWidth>
+                                <TextField id="standard-basic" label="Search" variant="standard" onChange={handleChangeSearch} />
+                            </FormControl>
                         </TableCell>
                     </TableRow>
                     <TableRow>
@@ -252,7 +282,7 @@ export default function BlogLists() {
                         <TablePagination
                             rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
                             colSpan={6}
-                            count={blogs.length}
+                            count={totalCount}
                             rowsPerPage={rowsPerPage}
                             page={page}
                             SelectProps={{

@@ -268,10 +268,10 @@ export default function BlogListForm(props) {
                             </Grid>
                             <Grid item xs={12}>
                                 <FormControl fullWidth error={formValues.status.error}>
-                                    <InputLabel id="demo-simple-select-label">Status</InputLabel>
+                                    <InputLabel id="status-select-label">Status</InputLabel>
                                     <Select
-                                        labelId="demo-simple-select-label"
-                                        id="demo-simple-select"
+                                        labelId="status-select-label"
+                                        id="status-select"
                                         value={post.status || ''}
                                         label="Status"
                                         onChange={(e) => { handleChangeFormData(e, 'status') }}
